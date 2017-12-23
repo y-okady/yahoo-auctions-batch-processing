@@ -1,0 +1,17 @@
+{
+    "manifest_version": 2,
+  
+    "name": "ヤフオク一括処理",
+    "description": "ヤフオクで出品中商品の出品を一括で取り下げるChrome拡張です。",
+    "version": "1.0",
+    "content_scripts": [
+        {
+            "matches": [
+                "https://auctions.yahoo.co.jp/openuser/jp/show/mystatus?select=selling",
+                "https://page.auctions.yahoo.co.jp/jp/show/cancelauction?*"
+            ],
+            "js": ["script.js"],
+            "css": ["style.css"]
+        }
+    ]
+}

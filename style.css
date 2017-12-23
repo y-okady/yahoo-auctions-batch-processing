@@ -1,0 +1,15 @@
+.yabp-btn {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: rgb(46, 166, 100);
+    margin: 8px;
+    padding: 8px;
+    border: 0;
+    cursor: pointer;
+}
+
+.yabp-btn[disabled] {
+    opacity: 0.4;
+    cursor: progress;
+}
