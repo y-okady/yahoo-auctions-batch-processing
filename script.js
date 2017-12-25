@@ -62,10 +62,73 @@ function injectCancelBtn() {
     form.appendChild(btn);
 }
 
+function injectReexhibitBtn() {
+    var table = document.querySelectorAll('#acWrContents table')[10];
+    if (!table) {
+        // 出品終了した商品がない
+        return;
+    }
+    var ids = Array.prototype.map.call(table.querySelectorAll('tr'), (row) => {
+        return row.querySelectorAll('td')[1].textContent;
+    });
+    ids.shift(); // 先頭行は「商品ID」
+    if (ids.length == 0) {
+        return;
+    }
+
+    var cell = document.querySelectorAll('#acWrContents table')[7].parentNode;
+    var btn = document.createElement('BUTTON');
+    btn.type = 'BUTTON';
+    btn.classList.add('yabp-btn');
+    btn.innerText = '表示中の商品を一括で再出品する';
+    btn.addEventListener('click', () => {
+        btn.disabled = true;
+        ids.forEach((id) => {
+            var iframe = document.createElement('IFRAME');
+            iframe.src = `https://auctions.yahoo.co.jp/sell/jp/show/resubmit?autosubmit=1&aID=${id}`;
+            iframe.width = 1;
+            iframe.height = 1;
+            iframe.onload = function() {
+                if (this.contentWindow.location.href === 'https://auctions.yahoo.co.jp/sell/jp/config/submit') {
+                    ids.shift();
+                    if (ids.length > 0) {
+                        return;
+                    }
+                    window.setTimeout(() => {
+                        window.location.reload();
+                    }, 5000);
+                }
+            };
+            document.body.appendChild(iframe);
+        });
+    });
+    cell.appendChild(btn);
+}
+
+function confirmReexhibit() {
+    var form = document.querySelector('#auction');
+    form.action += '?autosubmit=1';
+    form.submit();
+}
+
+function submitReexhibit() {
+    var btn = document.querySelector('#auc_preview_submit');
+    btn.click();
+}
+
 if (window.location.href === 'https://auctions.yahoo.co.jp/openuser/jp/show/mystatus?select=selling') {
     // 出品中一覧画面
     injectCancelPageBtn();
 } else if (window.location.href.startsWith('https://page.auctions.yahoo.co.jp/jp/show/cancelauction?')) {
     // 出品キャンセル画面
     injectCancelBtn();
+} else if (window.location.href === 'https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0') {
+    // 出品終了一覧画面 落札者なし
+    injectReexhibitBtn();
+} else if (window.location.href.startsWith('https://auctions.yahoo.co.jp/sell/jp/show/resubmit?autosubmit=1&aID=')) {
+    // iframe内の出品入力画面
+    confirmReexhibit();
+} else if (window.location.href === 'https://auctions.yahoo.co.jp/sell/jp/show/preview?autosubmit=1') {
+    // iframe内の出品確認画面
+    submitReexhibit();
 }
