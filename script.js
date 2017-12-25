@@ -1,5 +1,10 @@
 function injectCancelPageBtn() {
-    var ids = Array.prototype.map.call(document.querySelectorAll('#acWrContents table')[4].querySelectorAll('tr'), (row) => {
+    var table = document.querySelectorAll('#acWrContents table')[4];
+    if (!table) {
+        // 出品中の商品がない
+        return;
+    }
+    var ids = Array.prototype.map.call(table.querySelectorAll('tr'), (row) => {
         return row.querySelector('td').textContent;
     });
     ids.shift(); // 先頭行は「商品ID」
@@ -36,21 +41,22 @@ function injectCancelBtn() {
     btn.innerText = '一括で取り消す';
     btn.addEventListener('click', () => {
         btn.disabled = true;
-        var params = new URLSearchParams();
-        params.set('crumb', form.crumb.value);
-        params.set('cancel_fee', form.cancel_fee.value);
-        params.set('confirm', form.confirm.value);
-        ids.forEach((id) => {
-            params.set('aID', id);
-            fetch('https://page.auctions.yahoo.co.jp/jp/config/cancelauction', {
+        Promise.all(ids.map((id) => {
+            return fetch('https://page.auctions.yahoo.co.jp/jp/config/cancelauction', {
                 'method': 'POST',
-                'body': params,
+                'body': new URLSearchParams({
+                    'crumb': form.crumb.value,
+                    'cancel_fee': form.cancel_fee.value,
+                    'confirm': form.confirm.value,
+                    'aID': id
+                }),
                 'credentials': 'include'
-            }).then((resp) => {
-                window.setTimeout(() => {
-                    window.location.href = 'https://auctions.yahoo.co.jp/openuser/jp/show/mystatus?select=selling';
-                }, 3000);
             });
+        })).then((resps) => {
+            // POSTしてから画面に反映されるまで少し時間がかかるので待つ
+            window.setTimeout(() => {
+                window.location.href = 'https://auctions.yahoo.co.jp/openuser/jp/show/mystatus?select=selling';
+            }, 3000);
         });
     });
     form.appendChild(btn);
