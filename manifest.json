@@ -7,15 +7,16 @@
     "content_scripts": [
         {
             "matches": [
-                "https://auctions.yahoo.co.jp/openuser/jp/show/mystatus?select=selling",
+                "https://auctions.yahoo.co.jp/openuser/jp/show/mystatus?select=selling*",
                 "https://page.auctions.yahoo.co.jp/jp/show/cancelauction?*",
-                "https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0",
+                "https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0*",
                 "https://auctions.yahoo.co.jp/sell/jp/show/resubmit?autosubmit=1&aID=*",
                 "https://auctions.yahoo.co.jp/sell/jp/show/preview?autosubmit=1"
             ],
             "js": ["script.js"],
             "css": ["style.css"],
-            "all_frames": true
+            "all_frames": true,
+            "run_at": "document_end"
         }
     ]
 }

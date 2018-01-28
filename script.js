@@ -1,5 +1,5 @@
 function injectCancelPageBtn() {
-    var table = document.querySelectorAll('#acWrContents table')[4];
+    var table = document.querySelectorAll('#acWrContents table[bgcolor="#dcdcdc"]')[0];
     if (!table) {
         // 出品中の商品がない
         return;
@@ -56,14 +56,14 @@ function injectCancelBtn() {
             // POSTしてから画面に反映されるまで少し時間がかかるので待つ
             window.setTimeout(() => {
                 window.location.href = 'https://auctions.yahoo.co.jp/openuser/jp/show/mystatus?select=selling';
-            }, 3000);
+            }, 5000);
         });
     });
     form.appendChild(btn);
 }
 
 function injectReexhibitBtn() {
-    var table = document.querySelectorAll('#acWrContents table')[10];
+    var table = document.querySelectorAll('#acWrContents table[bgcolor="#dcdcdc"]')[0];
     if (!table) {
         // 出品終了した商品がない
         return;
@@ -91,11 +91,12 @@ function injectReexhibitBtn() {
             iframe.onload = function() {
                 if (this.contentWindow.location.href === 'https://auctions.yahoo.co.jp/sell/jp/config/submit') {
                     ids.shift();
+                    document.body.removeChild(this);
                     if (ids.length > 0) {
                         return;
                     }
                     window.setTimeout(() => {
-                        window.location.reload();
+                        window.location.href = 'https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0';
                     }, 5000);
                 }
             };
@@ -116,13 +117,13 @@ function submitReexhibit() {
     btn.click();
 }
 
-if (window.location.href === 'https://auctions.yahoo.co.jp/openuser/jp/show/mystatus?select=selling') {
+if (window.location.href.startsWith('https://auctions.yahoo.co.jp/openuser/jp/show/mystatus?select=selling')) {
     // 出品中一覧画面
     injectCancelPageBtn();
 } else if (window.location.href.startsWith('https://page.auctions.yahoo.co.jp/jp/show/cancelauction?')) {
     // 出品キャンセル画面
     injectCancelBtn();
-} else if (window.location.href === 'https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0') {
+} else if (window.location.href.startsWith('https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0')) {
     // 出品終了一覧画面 落札者なし
     injectReexhibitBtn();
 } else if (window.location.href.startsWith('https://auctions.yahoo.co.jp/sell/jp/show/resubmit?autosubmit=1&aID=')) {
