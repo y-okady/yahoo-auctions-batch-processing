@@ -62,6 +62,23 @@ function injectCancelBtn() {
     form.appendChild(btn);
 }
 
+function reexhibit(id) {
+    return new Promise((resolve, reject) => {
+        var iframe = document.createElement('IFRAME');
+        iframe.src = `https://auctions.yahoo.co.jp/sell/jp/show/resubmit?autosubmit=1&aID=${id}`;
+        iframe.width = 1;
+        iframe.height = 1;
+        iframe.onload = function() {
+            if (this.contentWindow.location.href === 'https://auctions.yahoo.co.jp/sell/jp/config/submit') {
+                // 再出品完了
+                document.body.removeChild(this);
+                resolve();
+            }
+        };
+        document.body.appendChild(iframe);
+    });
+}
+
 function injectReexhibitBtn() {
     var table = document.querySelectorAll('#acWrContents table[bgcolor="#dcdcdc"]')[0];
     if (!table) {
@@ -80,28 +97,19 @@ function injectReexhibitBtn() {
     var btn = document.createElement('BUTTON');
     btn.type = 'BUTTON';
     btn.classList.add('yabp-btn');
-    btn.innerText = '表示中の商品を一括で再出品する';
+    let btnText = '表示中の商品を一括で再出品する'
+    btn.innerText = btnText;
     btn.addEventListener('click', () => {
         btn.disabled = true;
-        ids.forEach((id) => {
-            var iframe = document.createElement('IFRAME');
-            iframe.src = `https://auctions.yahoo.co.jp/sell/jp/show/resubmit?autosubmit=1&aID=${id}`;
-            iframe.width = 1;
-            iframe.height = 1;
-            iframe.onload = function() {
-                if (this.contentWindow.location.href === 'https://auctions.yahoo.co.jp/sell/jp/config/submit') {
-                    ids.shift();
-                    document.body.removeChild(this);
-                    if (ids.length > 0) {
-                        return;
-                    }
-                    window.setTimeout(() => {
-                        window.location.href = 'https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0';
-                    }, 5000);
-                }
-            };
-            document.body.appendChild(iframe);
-        });
+        (async () => {
+            for (let i = 0; i < ids.length; i++) {
+                btn.innerText = btnText + ` (残り${ids.length - i}件)`;
+                await reexhibit(ids[i]);
+            }
+            window.setTimeout(() => {
+                window.location.href = 'https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0';
+            }, 5000);
+        })();
     });
     cell.appendChild(btn);
 }

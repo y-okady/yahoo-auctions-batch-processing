@@ -3,7 +3,7 @@
   
     "name": "ヤフオク一括処理",
     "description": "ヤフオクで出品中商品の出品を一括で取り下げたり、落札者なしの出品終了した商品を一括で出品するChrome拡張です。",
-    "version": "1.1",
+    "version": "1.2",
     "content_scripts": [
         {
             "matches": [
