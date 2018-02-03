@@ -38,9 +38,12 @@ function injectCancelBtn() {
     var btn = document.createElement('BUTTON');
     btn.type = 'BUTTON';
     btn.classList.add('yabp-btn');
-    btn.innerText = '一括で取り消す';
+    let btnText = '一括で取り消す';
+    btn.innerText = btnText;
     btn.addEventListener('click', () => {
         btn.disabled = true;
+        var remaining = ids.length;
+        btn.innerText = btnText + ` (残り${remaining}件)`;
         Promise.all(ids.map((id) => {
             return fetch('https://page.auctions.yahoo.co.jp/jp/config/cancelauction', {
                 'method': 'POST',
@@ -51,9 +54,12 @@ function injectCancelBtn() {
                     'aID': id
                 }),
                 'credentials': 'include'
+            }).then(() => {
+                btn.innerText = btnText + ` (残り${--remaining}件)`;
             });
-        })).then((resps) => {
+        })).then(() => {
             // POSTしてから画面に反映されるまで少し時間がかかるので待つ
+            btn.innerText = btnText + ' (しばらくお待ちください...)';
             window.setTimeout(() => {
                 window.location.href = 'https://auctions.yahoo.co.jp/openuser/jp/show/mystatus?select=selling';
             }, 5000);
@@ -101,11 +107,14 @@ function injectReexhibitBtn() {
     btn.innerText = btnText;
     btn.addEventListener('click', () => {
         btn.disabled = true;
+        btn.innerText = btnText + ` (残り${ids.length}件)`;
         (async () => {
             for (let i = 0; i < ids.length; i++) {
-                btn.innerText = btnText + ` (残り${ids.length - i}件)`;
                 await reexhibit(ids[i]);
+                btn.innerText = btnText + ` (残り${ids.length - (i + 1)}件)`;
             }
+            // POSTしてから画面に反映されるまで少し時間がかかるので待つ
+            btn.innerText = btnText + ' (しばらくお待ちください...)';
             window.setTimeout(() => {
                 window.location.href = 'https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0';
             }, 5000);
