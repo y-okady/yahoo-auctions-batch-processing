@@ -7,11 +7,11 @@
     "content_scripts": [
         {
             "matches": [
-                "https://auctions.yahoo.co.jp/openuser/jp/show/mystatus?select=selling*",
-                "https://page.auctions.yahoo.co.jp/jp/show/cancelauction?*",
-                "https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus?select=closed&hasWinner=0*",
-                "https://auctions.yahoo.co.jp/sell/jp/show/resubmit?autosubmit=1&aID=*",
-                "https://auctions.yahoo.co.jp/sell/jp/show/preview?autosubmit=1"
+                "https://auctions.yahoo.co.jp/openuser/jp/show/mystatus*",
+                "https://page.auctions.yahoo.co.jp/jp/show/cancelauction*",
+                "https://auctions.yahoo.co.jp/closeduser/jp/show/mystatus*",
+                "https://auctions.yahoo.co.jp/sell/jp/show/resubmit*",
+                "https://auctions.yahoo.co.jp/sell/jp/show/preview*"
             ],
             "js": ["script.js"],
             "css": ["style.css"],
