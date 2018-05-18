@@ -136,7 +136,10 @@ function submitReexhibit() {
         return;
     }
     window.localStorage.removeItem(`yabp.reexhibit.${form.aID.value}`);
-    var btn = document.querySelector('#auc_preview_submit');
+    var btn =
+        document.querySelector('#auc_preview_submit') ||
+        document.querySelector('#auc_preview_submit_up') ||
+        document.querySelector('#auc_preview_submit_down');
     btn.click();
 }
 
